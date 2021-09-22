@@ -1,0 +1,11 @@
+*.DS_Store
+*.complete
+__pycache__
+*.pyc
+*.so
+*.[oa]
+*.jpg
+*.png
+*.mp4
+*.tsv
+*.csv

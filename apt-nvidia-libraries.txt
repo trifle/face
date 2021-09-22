@@ -1,0 +1,19 @@
+ii  libnvidia-cfg1-470-server:amd64                   470.57.02-0ubuntu0.20.04.4                  amd64        NVIDIA binary OpenGL/GLX configuration library
+ii  libnvidia-compute-470-server:amd64                470.57.02-0ubuntu0.20.04.4                  amd64        NVIDIA libcompute package
+ii  libnvidia-container-tools                         1.5.0-1                                     amd64        NVIDIA container runtime library (command-line tools)
+ii  libnvidia-container1:amd64                        1.5.0-1                                     amd64        NVIDIA container runtime library
+ii  libnvidia-decode-470-server:amd64                 470.57.02-0ubuntu0.20.04.4                  amd64        NVIDIA Video Decoding runtime libraries
+ii  linux-objects-nvidia-460-server-5.11.0-27-generic 5.11.0-27.29~20.04.1                        amd64        Linux kernel nvidia modules for version 5.11.0-27 (objects)
+ii  linux-objects-nvidia-460-server-5.11.0-34-generic 5.11.0-34.36~20.04.1                        amd64        Linux kernel nvidia modules for version 5.11.0-34 (objects)
+ii  linux-signatures-nvidia-5.11.0-27-generic         5.11.0-27.29~20.04.1                        amd64        Linux kernel signatures for nvidia modules for version 5.11.0-27-generic
+ii  linux-signatures-nvidia-5.11.0-34-generic         5.11.0-34.36~20.04.1                        amd64        Linux kernel signatures for nvidia modules for version 5.11.0-34-generic
+ii  nvidia-compute-utils-470-server                   470.57.02-0ubuntu0.20.04.4                  amd64        NVIDIA compute utilities
+ii  nvidia-container-runtime                          3.5.0-1                                     amd64        NVIDIA container runtime
+ii  nvidia-container-toolkit                          1.5.1-1                                     amd64        NVIDIA container runtime hook
+ii  nvidia-dkms-470-server                            470.57.02-0ubuntu0.20.04.4                  amd64        NVIDIA DKMS package
+ii  nvidia-docker2                                    2.6.0-1                                     all          nvidia-docker CLI wrapper
+ii  nvidia-headless-470-server                        470.57.02-0ubuntu0.20.04.4                  amd64        NVIDIA headless metapackage
+ii  nvidia-headless-no-dkms-470-server                470.57.02-0ubuntu0.20.04.4                  amd64        NVIDIA headless metapackage - no DKMS
+ii  nvidia-kernel-common-470-server                   470.57.02-0ubuntu0.20.04.4                  amd64        Shared files used with the kernel module
+ii  nvidia-kernel-source-470-server                   470.57.02-0ubuntu0.20.04.4                  amd64        NVIDIA kernel source package
+ii  nvidia-utils-470-server                           470.57.02-0ubuntu0.20.04.4                  amd64        NVIDIA Server Driver support binaries
