@@ -1,5 +1,5 @@
 # Deep learning analysis of age and gender on TV
-This repository contains code for the paper <TBD>.
+This repository contains code for the paper {TBD}.
 It implements a performant analysis pipeline to extract faces from video files, scale them into a normalized representation, and estimate their age and gender.
 
 We draw on pre-existing code from a series of projects:
