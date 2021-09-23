@@ -38,7 +38,8 @@ Once all prerequisites are installed, video files may be placed in the `input` d
 - `--output` sets the directory to which output data is written
 - `--frames N` enables writing of annotated full frames (not just faces) to the output directories. These frames have identified faces annotated with a bounding box.
 
-To run the included example, set up the docker container and run the following steps:
+To run the included example, set up the docker container and run the following steps:  
+
 ´´´bash
 docker run --rm --gpus all -it face-analaysis /bin/bash
 python3 pipeline.py --input diagnosis --output output --frames 100
