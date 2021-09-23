@@ -6,6 +6,5 @@ __pycache__
 *.[oa]
 *.jpg
 *.png
-*.mp4
 *.tsv
 *.csv
