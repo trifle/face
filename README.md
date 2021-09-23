@@ -45,6 +45,7 @@ docker run --rm --gpus all -it face-analysis /bin/bash
 python3 pipeline.py --input diagnosis --output output --frames 100
 ```
 
+You should find the result in the `output` folder. We have included the sample video segment along with the results in `diagnosis`.
 
 ## Some notes on performance
 Large-scale analyses of video material is bound to encounter several bottlenecks which have been worked around in this repository. We want to make these observations available in the hope that future research may benefit.
