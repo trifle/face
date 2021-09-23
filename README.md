@@ -24,7 +24,7 @@ Despite their performance benefits, graphics cards complicate replicability due 
 and then install the required apt packages for nvidia-470. A list of packages installed on our system can be found in `apt-nvidia-libraries.txt`.
 
 ### Docker image
-To use the docker image, install docker to your linux computer (and nvidia-docker to make use of Nvidia gpus), and run `docker build -t face-analysis -f face-gpu.Dockerfile .`. Then launch the image with `docker run --rm --gpus all -it face-analaysis /bin/bash`. Note that building the image requires a gpu, and the default docker executor needs to be set to nvidia. To do so, add the line `"default-runtime": "nvidia"` to /etc/docker/daemon.json and restart the docker daemon. If the system does not have a gpu, use `docker build -t face-analysis -f face-cpu.Dockerfile` instead.
+To use the docker image, [install docker](https://docs.docker.com/engine/install/ubuntu/) to your linux computer (and [nvidia-docker](https://github.com/NVIDIA/nvidia-docker) to make use of Nvidia gpus), and run `docker build -t face-analysis -f face-gpu.Dockerfile .`. Then launch the image with `docker run --rm --gpus all -it face-analaysis /bin/bash`. Note that building the image requires a gpu, and the default docker executor needs to be set to nvidia. To do so, add the line `"default-runtime": "nvidia"` to /etc/docker/daemon.json and restart the docker daemon. If the system does not have a gpu, use `docker build -t face-analysis -f face-cpu.Dockerfile` instead.
 
 ### Library versions
 Keeping with best practices, we have set up a `requirements.txt` file which lists the versions of python libraries we used. Where possible, we have directly included the relevant source files in our repository - this goes for the architecture of our classifier (in `wide_resnet.py`), the architecture of the face extraction model (`retinaface.py`), the face normalization (`retinaface_align.py`) and the models (`R50` for retinaface, `weights.28-3.73.hdf5` for the IMDB-wiki-classifier and `weights.29-3.76_utk.hdf5` for the UTK-classifier, all found in the `models` directory).
@@ -32,7 +32,7 @@ Keeping with best practices, we have set up a `requirements.txt` file which list
 Note that due to disjoint requirements, installing precisely these versions may fail in the future, especially when using pip's new dependency lookup. Because mxnet (the deep learning framework used by retinaface) and tensorflow/keras (the deep learning framework used by the age/gender classifier) track different versions of libraries (numpy in particular), resulting conflicts can become unresolvable. In that case, it should still be possible to use a separate environment for mxnet-cu112 and tensorflow respectively.
 
 ## Running the code
-Once all prerequisites are installed, video files may be placed in the `input` directory of this repository. Then run `python3 pipeline.py`. For each vide, a tar file (without compression) is created containing the extracted faces. These tar files are then processed by the classifier. The result are per-video CSV files in the `output` directory, which can be further analyzed in R. There are a couple of optional command line options:
+Once all prerequisites are installed, video files may be placed in the `input` directory of this repository. Then run `python3 pipeline.py`. For each video, a tar file (without compression) is created containing the extracted faces. These tar files are then processed by the classifiers. The result are per-video TSV files in the `output` directory, which can be further analyzed in R. There are a couple of optional command line options:
 
 - `--input` sets a directory from which to load video files
 - `--output` sets the directory to which output data is written
@@ -42,7 +42,7 @@ Once all prerequisites are installed, video files may be placed in the `input` d
 Large-scale analyses of video material is bound to encounter several bottlenecks which have been worked around in this repository. We want to make these observations available in the hope that future research may benefit.
 
 ### Disk I/O
-Video material takes up significant disk space; even our modest sample reached approximately 6TB. More importantly though, the individual images of extracted faces can easily overwhelm a disk system, either by using up all available inodes or by slowing down directory access. Possible solutions are  
+Video material takes up significant disk space; even our modest sample reached approximately 6TB of raw recordings. More importantly though, the individual images of extracted faces can easily overwhelm a disk system, either by using up all available inodes or by slowing down directory access. Possible solutions are  
 (1) a tiered directory structure that stores images in subfolders named by tiered hash bytes (`123/456/789/123456789.jpg`),  
 (2) directly analyzing faces without storing them on disk (this requires that all applicable neural networks fit into the gpu memory at once), and  
 (3) our approach: Storing face images in an uncompressed tar per video file.
@@ -50,16 +50,18 @@ Video material takes up significant disk space; even our modest sample reached a
 ### Decoding videos
 Decoding videos from their compressed source formats makes up a surprisingly large amount of the resources consumed by the overall pipeline, especially if sources are in h.264 or h.265 or other modern formats and/or exist in high resolution. Processing a one-hour segment can take up to several minutes, even on contemporary machines.
 
-Decoding video is much faster when done by a modern gpu - that is why we include the decord library for gpu-accelerated video loading. Since it is not always available, it's disabled by default. You can enable it by setting the decoding context in `face/retina.py`:
+Decoding video is much faster when done by a modern gpu - that is why we include the [decord](https://github.com/dmlc/decord) library for gpu-accelerated video loading. Since gpu-based decoding has quite a few prerequisited, it's disabled by default. You can enable it by setting the decoding context in `face/retina.py`:
 Switch `vr = VideoReader(str(video_path), ctx=cpu(0))` to  `vr = VideoReader(str(video_path), ctx=gpu(0))`.
 
 Some care is still warranted in deciding for or against this technology.  
 (1) gpu-based video decoders are not identical to software-based ones and do encounter more errors.  
 (2) To decode a video, the file needs to be transferred from main memory to the gpu - a bottleneck that may slow down especially serial decoding of many small files.  
-(3) Decoding on the gpu requires free memory; video files may be too large to be processed.  
-(4) In the past, there were several bugs in decord that would slow down random access to a video's frames; as a result, CPU parsing was faster.
+(3) Decoding on the gpu requires free memory; video files may be too large to be processed, especially when neural models are loaded at the same time.  
+(4) In the past, there were several bugs in decord that would slow down random access to a video's frames; as a result, CPU parsing was faster.  
+(5) When a fast CPU is available, it may be more efficient to perform video decoding on the CPU and leave the GPU free to simultatenously analyze results.
 
-### Performing multiple analyses
+### Parallelization and handling gpu memory
 Complex pipelines often include multiple neural networks (as ours does - retinaface and two wide resnets). But modern architectures also tend to be very large and require a lot of gpu memory. In between running these networks, the memory needs to be freed, or scripts will crash with an out of memory-error. It is sometimes still possible to run the entire pipeline in one go - by spawning child processes with `multiprocessing`, which in turn import the required libraries that set up the network. Note that this strategy may fail for mxnet when the library is not imported before creating additional processes.
 Finally, memoization (caching finished results) is crucial; we included a simple file-based memoization utility in `utils.py`.
 
+Optimal performance furthermore may require parallelization - i.e. running multiple neural networks at once on the same gpu, or spreading computation across multiple gpus. We did run our bulk analysis with parallel processes, but the details are too finnicky to offer them pre-made. The best strategy for efficient handling of very large volumes should be running each step of the pipeline as a separate process: The built-in memoziation will prevent repeated ingestion of already processed files, and each stage can independently watch for and work on new results. Do not hesitate to contact us for further details.
