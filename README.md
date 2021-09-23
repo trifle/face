@@ -48,7 +48,7 @@ Video material takes up significant disk space; even our modest sample reached a
 (3) our approach: Storing face images in an uncompressed tar per video file.
 
 ### Decoding videos
-Decoding videos from their compressed source formats makes up a surprisingly large amount of the resources consumed by the overall pipeline, especially if sources are in h.264 or h.265 or other modern formats and/or exist in high resolution. Processing a one-hour segment can take up to several minutes, even on contemporary machines with 10+ CPU cores.
+Decoding videos from their compressed source formats makes up a surprisingly large amount of the resources consumed by the overall pipeline, especially if sources are in h.264 or h.265 or other modern formats and/or exist in high resolution. Processing a one-hour segment can take up to several minutes, even on contemporary machines.
 
 Decoding video is much faster when done by a modern gpu - that is why we include the decord library for gpu-accelerated video loading. Since it is not always available, it's disabled by default. You can enable it by setting the decoding context in `face/retina.py`:
 Switch `vr = VideoReader(str(video_path), ctx=cpu(0))` to  `vr = VideoReader(str(video_path), ctx=gpu(0))`.
