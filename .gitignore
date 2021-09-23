@@ -4,7 +4,6 @@ __pycache__
 *.pyc
 *.so
 *.[oa]
-*.jpg
 *.png
 *.tsv
 *.csv
