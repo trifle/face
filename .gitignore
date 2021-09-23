@@ -4,6 +4,3 @@ __pycache__
 *.pyc
 *.so
 *.[oa]
-*.png
-*.tsv
-*.csv
