@@ -14,6 +14,8 @@ The pipeline is able to efficiently process large volumes of video material and 
 ## Technical prerequisites and replicability
 Many of the python libraries used in this repository are not trivially usable on Windows and macOS computers. Please use a linux system (preferrably Ubuntu 20.04) to run the code. We also provide a Dockerfile to create a self-contained environment in which everything is set up and ready to use.
 
+Note that this repository contains the original model files used along with a sample video, and therefore uses git lfs (for large file storage). You will need to install git-lfs to clone it.
+
 ### Graphics cards
 Deep learning is rather resource-intensive and therefore benefits from computing resources provided by graphics cards (gpus). The code in this repository should work without special hardware, but has been used exclusively with Nvidia gpus. If you do not have one installed on your system, set `GPU_ID = -1` in the file `face/retina.py`.
 
