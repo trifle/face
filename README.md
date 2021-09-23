@@ -24,7 +24,7 @@ Despite their performance benefits, graphics cards complicate replicability due 
 and then install the required apt packages for nvidia-470. A list of packages installed on our system can be found in `apt-nvidia-libraries.txt`.
 
 ### Docker image
-To use the docker image, [install docker](https://docs.docker.com/engine/install/ubuntu/) to your linux computer (and [nvidia-docker](https://github.com/NVIDIA/nvidia-docker) to make use of Nvidia gpus), and run `docker build -t face-analysis -f face-gpu.Dockerfile .`. Then launch the image with `docker run --rm --gpus all -it face-analaysis /bin/bash`. Note that building the image requires a gpu, and the default docker executor needs to be set to nvidia. To do so, add the line `"default-runtime": "nvidia"` to /etc/docker/daemon.json and restart the docker daemon. If the system does not have a gpu, use `docker build -t face-analysis -f face-cpu.Dockerfile` instead.
+To use the docker image, [install docker](https://docs.docker.com/engine/install/ubuntu/) to your linux computer (and [nvidia-docker](https://github.com/NVIDIA/nvidia-docker) to make use of Nvidia gpus), and run `docker build -t face-analysis -f face-gpu.Dockerfile .`. Then launch the image with `docker run --rm -it --gpus all -it face-analaysis /bin/bash`. Note that building the image requires a gpu, and the default docker executor needs to be set to nvidia. To do so, add the line `"default-runtime": "nvidia"` to /etc/docker/daemon.json and restart the docker daemon. If the system does not have a gpu, use `docker build -t face-analysis -f face-cpu.Dockerfile` instead.
 
 ### Library versions
 Keeping with best practices, we have set up a `requirements.txt` file which lists the versions of python libraries we used. Where possible, we have directly included the relevant source files in our repository - this goes for the architecture of our classifier (in `wide_resnet.py`), the architecture of the face extraction model (`retinaface.py`), the face normalization (`retinaface_align.py`) and the models (`R50` for retinaface, `weights.28-3.73.hdf5` for the IMDB-wiki-classifier and `weights.29-3.76_utk.hdf5` for the UTK-classifier, all found in the `models` directory).
@@ -36,7 +36,14 @@ Once all prerequisites are installed, video files may be placed in the `input` d
 
 - `--input` sets a directory from which to load video files
 - `--output` sets the directory to which output data is written
-- `--frame N` enables writing of annotated full frames (not just faces) to the output directories. These frames have identified faces annotated with a bounding box.
+- `--frames N` enables writing of annotated full frames (not just faces) to the output directories. These frames have identified faces annotated with a bounding box.
+
+To run the included example, set up the docker container and run the following steps:
+´´´bash
+docker run --rm --gpus all -it face-analaysis /bin/bash
+python3 pipeline.py --input diagnosis --output output --frames 100
+´´´
+
 
 ## Some notes on performance
 Large-scale analyses of video material is bound to encounter several bottlenecks which have been worked around in this repository. We want to make these observations available in the hope that future research may benefit.
