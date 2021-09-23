@@ -7,6 +7,10 @@ We draw on pre-existing code from a series of projects:
 - To maintain comparability, we employ two pre-trained [ResNet architectures](https://github.com/yu4u/age-gender-estimation) whose performance on IMDB-Wiki and UTK was comparable to various self-trained models
 - Fast parsing of video files is performed with [decord](https://github.com/dmlc/decord), a gpu-based video loading library for python
 
+The pipeline is able to efficiently process large volumes of video material and produces estimates of age and gender of found faces along with metadata (detection confidence, bounding boxes):
+
+![Pipeline Visualization](diagnosis/cnns-visualization.png)
+
 ## Technical prerequisites and replicability
 Many of the python libraries used in this repository are not trivially usable on Windows and macOS computers. Please use a linux system (preferrably Ubuntu 20.04) to run the code. We also provide a Dockerfile to create a self-contained environment in which everything is set up and ready to use.
 
