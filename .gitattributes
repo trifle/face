@@ -6,3 +6,4 @@ models/retina-age-gender filter=lfs diff=lfs merge=lfs -text
 models/weights.28-3.73.hdf5 filter=lfs diff=lfs merge=lfs -text
 models/weights.29-3.76_utk.hdf5 filter=lfs diff=lfs merge=lfs -text
 models/EfficientNetB3_224_weights.11-3.44.hdf5 filter=lfs diff=lfs merge=lfs -text
+diagnosis/cnn-sample.mp4 filter=lfs diff=lfs merge=lfs -text
