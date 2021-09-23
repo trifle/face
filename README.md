@@ -42,7 +42,10 @@ Once all prerequisites are installed, video files may be placed in the `input` d
 Large-scale analyses of video material is bound to encounter several bottlenecks which have been worked around in this repository. We want to make these observations available in the hope that future research may benefit.
 
 ### Disk I/O
-Video material takes up significant disk space; even our modest sample reached approximately 6TB. More importantly though, the individual images of extracted faces can easily overwhelm a disk system, either by using up all available inodes or by slowing down directory access. Possible solutions are (1) a tiered directory structure that stores images in subfolders named by tiered hash bytes (`123/456/789/123456789.jpg`), (2) directly analyzing faces without storing them on disk (this requires that all applicable neural networks fit into the gpu memory at once), and (3) our approach: Storing face images in an uncompressed tar per video file.
+Video material takes up significant disk space; even our modest sample reached approximately 6TB. More importantly though, the individual images of extracted faces can easily overwhelm a disk system, either by using up all available inodes or by slowing down directory access. Possible solutions are  
+(1) a tiered directory structure that stores images in subfolders named by tiered hash bytes (`123/456/789/123456789.jpg`),  
+(2) directly analyzing faces without storing them on disk (this requires that all applicable neural networks fit into the gpu memory at once), and  
+(3) our approach: Storing face images in an uncompressed tar per video file.
 
 ### Decoding videos
 Decoding videos from their compressed source formats makes up a surprisingly large amount of the resources consumed by the overall pipeline, especially if sources are in h.264 or h.265 or other modern formats and/or exist in high resolution. Processing a one-hour segment can take up to several minutes, even on contemporary machines with 10+ CPU cores.
@@ -50,7 +53,11 @@ Decoding videos from their compressed source formats makes up a surprisingly lar
 Decoding video is much faster when done by a modern gpu - that is why we include the decord library for gpu-accelerated video loading. Since it is not always available, it's disabled by default. You can enable it by setting the decoding context in `face/retina.py`:
 Switch `vr = VideoReader(str(video_path), ctx=cpu(0))` to  `vr = VideoReader(str(video_path), ctx=gpu(0))`.
 
-Some care is still warranted in deciding for or against this technology. (1) gpu-based video decoders are not identical to software-based ones and do encounter more errors. (2) To decode a video, the file needs to be transferred from main memory to the gpu - a bottleneck that may slow down especially serial decoding of many small files. (3) Decoding on the gpu requires free memory; video files may be too large to be processed. (4) In the past, there were several bugs in decord that would slow down random access to a video's frames; as a result, CPU parsing was faster.
+Some care is still warranted in deciding for or against this technology.  
+(1) gpu-based video decoders are not identical to software-based ones and do encounter more errors.  
+(2) To decode a video, the file needs to be transferred from main memory to the gpu - a bottleneck that may slow down especially serial decoding of many small files.  
+(3) Decoding on the gpu requires free memory; video files may be too large to be processed.  
+(4) In the past, there were several bugs in decord that would slow down random access to a video's frames; as a result, CPU parsing was faster.
 
 ### Performing multiple analyses
 Complex pipelines often include multiple neural networks (as ours does - retinaface and two wide resnets). But modern architectures also tend to be very large and require a lot of gpu memory. In between running these networks, the memory needs to be freed, or scripts will crash with an out of memory-error. It is sometimes still possible to run the entire pipeline in one go - by spawning child processes with `multiprocessing`, which in turn import the required libraries that set up the network. Note that this strategy may fail for mxnet when the library is not imported before creating additional processes.
