@@ -41,7 +41,7 @@ Once all prerequisites are installed, video files may be placed in the `input` d
 To run the included example, set up the docker container and run the following steps:  
 
 ```shell
-docker run --rm --gpus all -it face-analaysis /bin/bash
+docker run --rm --gpus all -it face-analysis /bin/bash
 python3 pipeline.py --input diagnosis --output output --frames 100
 ```
 
