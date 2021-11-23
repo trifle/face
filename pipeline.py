@@ -61,10 +61,15 @@ if __name__ == '__main__':
     """
     print(f'>>- Analyzing faces from video files in {args.input}')
     print(f'>>- Startup - loading libraries and models ...')
-    from face.retina import extract_faces_video
+    from face.retina import extract_faces_video, extract_faces
     for video in Path(SOURCE_DIR).glob("**/*.mp4"):
         print(f'>>- Extracting faces from {video}')
         extract_faces_video(video, OUTPUT_DIR, output_frames=args.frames)
+
+    for extension in IMAGE_PATTERNS:
+        for image in Path(SOURCE_DIR).glob(f"**/{extension}"):
+            print(f'>>- Extracting faces from {image.name}')
+            extract_faces(image, OUTPUT_DIR)
 
     for tarfile in Path(OUTPUT_DIR).glob("**/*.tar"):
         print(f'>>- Analyzing faces from {tarfile}')
