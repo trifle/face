@@ -22,12 +22,11 @@ OUTPUT_DIR = Path(args.output)
 
 
 @log_complete
-def analyze_tar(tarpath, output_dir):
+def analyze_tar_age_gender(tarpath, output_dir):
     """
     Analyze faces stored in a tar file
     """
     from attributes.age_gender import age_gender_iterator
-    from attributes.fair import fair_iterator
     outfile = output_dir / f'{tarpath.stem}_age_gender.tsv'
     # Write header on news files
     if not outfile.exists():
@@ -48,6 +47,38 @@ def analyze_tar(tarpath, output_dir):
         with open(outfile, 'a') as of:
             for name, (classifier, age, f) in zip(names, results):
                 of.write(f'{name}\t{classifier}\t{age}\t{f}\t\n')
+
+    chunk = []
+    names = []
+    for img, name in iter_tar(tarpath):
+        chunk.append(img)
+        names.append(name)
+        if len(chunk) == 128:
+            flush(chunk, names, outfile)
+            chunk = []
+            names = []
+    # Flush the final batch
+    flush(chunk, names, outfile)
+
+
+@log_complete
+def analyze_tar_fair(tarpath, output_dir):
+    """
+    Analyze faces stored in a tar file
+    """
+    from attributes.fair import fair_iterator
+    outfile = output_dir / f'{tarpath.stem}_fair.tsv'
+    # Write header on news files
+    if not outfile.exists():
+        with open(outfile, 'w') as of:
+            of.write(f'filename\tclassifier\tage\tgender\trace\n')
+
+    def flush(chunk, names, outfile):
+        """
+        Analyze a batch of faces and write results to disk
+        """
+        if not chunk:
+            return
         results = list(fair_iterator(chunk))
         with open(outfile, 'a') as of:
             for name, (classifier, age, f, race) in zip(names, results):
@@ -84,4 +115,4 @@ if __name__ == '__main__':
 
     for tarfile in Path(OUTPUT_DIR).glob("**/*.tar"):
         print(f'>>- Analyzing faces from {tarfile}')
-        analyze_tar(tarfile, OUTPUT_DIR)
+        analyze_tar_fair(tarfile, OUTPUT_DIR)
