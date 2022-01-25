@@ -56,6 +56,7 @@ RUN apt-get install -y libcairo2-dev
 RUN pip3 install --upgrade pip setuptools wheel
 RUN pip3 install cython
 RUN pip3 install -r requirements.txt
+RUN git clone https://github.com/dchen236/FairFace.git
 
 # Fallback - if pip install above does not work, use this unversioned command
 # RUN pip3 install cython numpy decord tqdm scikit-image mxnet-cu112 cython insightface keras tensorflow numpy

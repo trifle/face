@@ -27,7 +27,12 @@ def analyze_tar(tarpath, output_dir):
     Analyze faces stored in a tar file
     """
     from attributes.age_gender import age_gender_iterator
+    from attributes.fair import fair_iterator
     outfile = output_dir / f'{tarpath.stem}_age_gender.tsv'
+    # Write header on news files
+    if not outfile.exists():
+        with open(outfile, 'w') as of:
+            of.write(f'filename\tclassifier\tage\tgender\trace\n')
 
     def flush(chunk, names, outfile):
         """
@@ -36,11 +41,15 @@ def analyze_tar(tarpath, output_dir):
         results = list(age_gender_iterator(chunk, "imdb"))
         with open(outfile, 'a') as of:
             for name, (classifier, age, f) in zip(names, results):
-                of.write(f'{name}\t{classifier}\t{age}\t{f}\n')
+                of.write(f'{name}\t{classifier}\t{age}\t{f}\t\n')
         results = list(age_gender_iterator(chunk, "utk"))
         with open(outfile, 'a') as of:
             for name, (classifier, age, f) in zip(names, results):
-                of.write(f'{name}\t{classifier}\t{age}\t{f}\n')
+                of.write(f'{name}\t{classifier}\t{age}\t{f}\t\n')
+        results = list(fair_iterator(chunk))
+        with open(outfile, 'a') as of:
+            for name, (classifier, age, f, race) in zip(names, results):
+                of.write(f'{name}\t{classifier}\t{age}\t{f}\t{race}\n')
 
     chunk = []
     names = []
