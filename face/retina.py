@@ -70,7 +70,7 @@ def extract_faces_video(video_path: Path, output_dir: Path, min_size=None, skip=
     except tarfile.ReadError:
         chip_tar_archive = tarfile.open(chip_tar_name, "w")
 
-    vr = VideoReader(str(video_path), ctx=cpu(0))
+    vr = VideoReader(str(video_path), ctx=cpu())
     video_basename = video_path.stem
     fps = int(vr.get_avg_fps())
 
