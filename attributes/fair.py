@@ -1,15 +1,11 @@
 from __future__ import print_function, division
 import warnings
 warnings.filterwarnings("ignore")
-import os.path
-import pandas as pd
 import torch
 import torch.nn as nn
 import numpy as np
 import torchvision
 from torchvision import datasets, models, transforms
-import dlib
-import os
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 model_fair_7 = torchvision.models.resnet34(pretrained=True)
