@@ -63,6 +63,9 @@ def extract_faces_video(video_path: Path, output_dir: Path, min_size=None, skip=
     output_frames: if anything other than 0, write every nth frame to disk - for debugging
     """
     metadata_filename = output_dir / f'{video_path.stem}_face_metadata.tsv'
+    if not metadata_filename.exists():
+        with open(metadata_filename, 'w') as mf:
+            metadata = f'image_basename\twidth\theight\ttop\tleft\tbottom\tright\timg_width\timg_height\tconfidence\n'
     chip_tar_name = output_dir / f'{video_path.stem}_chips.tar'
     # Append fails if the file does not exist yet!
     try:
@@ -85,6 +88,7 @@ def extract_faces_video(video_path: Path, output_dir: Path, min_size=None, skip=
     # Memory hungry since it reads all frames into one tensor
     frames = vr.get_batch(seq).asnumpy()
     for idx, img in zip(seq, frames):
+        img_height, img_width, _ = img.shape
         # Rescale
         scales = image_scale(img)
         # Detect faces and landmarks
@@ -106,7 +110,7 @@ def extract_faces_video(video_path: Path, output_dir: Path, min_size=None, skip=
             chip = cv2.cvtColor(chip, cv2.COLOR_BGR2RGB)
             write_tar_image(chip, image_basename, chip_tar_archive)
             with open(metadata_filename, 'a') as mf:
-                metadata = f'{image_basename}\t{width}\t{height}\t{top}\t{left}\t{bottom}\t{right}\t{confidence}\n'
+                metadata = f'{image_basename}\t{width}\t{height}\t{top}\t{left}\t{bottom}\t{right}\t{img_width}\t{img_height}\t{confidence}\n'
                 mf.write(metadata)
         # Write frame to disk if index is a match
         if output_frames and (output_frames % 100 == 0):
@@ -121,11 +125,14 @@ def extract_faces(image_path: Path, output_dir: Path, min_size=None):
     Extract and align faces from a single image using RetinaFace
     """
     metadata_filename = output_dir / f'{output_dir.stem}_face_metadata.tsv'
-
+    if not metadata_filename.exists():
+        with open(metadata_filename, 'w') as mf:
+            metadata = f'image_basename\twidth\theight\ttop\tleft\tbottom\tright\timg_width\timg_height\tconfidence\n'
     chip_tar_name = output_dir / f'{output_dir.stem}_chips.tar'
     chip_tar_archive = tarfile.open(chip_tar_name, "a")
 
     img = cv2.imread(str(image_path))
+    img_height, img_width, _ = img.shape
     scales = image_scale(img)
     faces, landmarks = face_detector.detect(
         img, FACE_DETECTION_THRESHOLD, scales=scales)
@@ -138,6 +145,6 @@ def extract_faces(image_path: Path, output_dir: Path, min_size=None):
         image_basename = f'{image_path.stem}_face{i}.jpg'
         write_tar_image(chip, image_basename, chip_tar_archive)
         with open(metadata_filename, 'a') as mf:
-            metadata = f'{image_basename}\t{width}\t{height}\t{top}\t{left}\t{bottom}\t{right}\t{confidence}\n'
+            metadata = f'{image_basename}\t{width}\t{height}\t{top}\t{left}\t{bottom}\t{right}\t{img_width}\t{img_height}\t{confidence}\n'
             mf.write(metadata)
     chip_tar_archive.close()
