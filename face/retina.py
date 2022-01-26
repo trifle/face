@@ -65,7 +65,7 @@ def extract_faces_video(video_path: Path, output_dir: Path, min_size=None, skip=
     metadata_filename = output_dir / f'{video_path.stem}_face_metadata.tsv'
     if not metadata_filename.exists():
         with open(metadata_filename, 'w') as mf:
-            metadata = f'image_basename\twidth\theight\ttop\tleft\tbottom\tright\timg_width\timg_height\tconfidence\n'
+            mf.write(f'image_basename\twidth\theight\ttop\tleft\tbottom\tright\timg_width\timg_height\tconfidence\n')
     chip_tar_name = output_dir / f'{video_path.stem}_chips.tar'
     # Append fails if the file does not exist yet!
     try:
@@ -127,7 +127,7 @@ def extract_faces(image_path: Path, output_dir: Path, min_size=None):
     metadata_filename = output_dir / f'{output_dir.stem}_face_metadata.tsv'
     if not metadata_filename.exists():
         with open(metadata_filename, 'w') as mf:
-            metadata = f'image_basename\twidth\theight\ttop\tleft\tbottom\tright\timg_width\timg_height\tconfidence\n'
+            mf.write(f'image_basename\twidth\theight\ttop\tleft\tbottom\tright\timg_width\timg_height\tconfidence\n')
     chip_tar_name = output_dir / f'{output_dir.stem}_chips.tar'
     chip_tar_archive = tarfile.open(chip_tar_name, "a")
 
