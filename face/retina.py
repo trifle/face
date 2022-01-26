@@ -96,7 +96,7 @@ def extract_faces_video(video_path: Path, output_dir: Path, min_size=None, skip=
         # Write faces to tar file
         for i in range(len(faces)):
             lmk = landmarks[i].astype(np.int)
-            chip = norm_crop(img, lmk, 112,)
+            chip = norm_crop(img, lmk, 224,)
             width, height = sizes[i]
             top, left, bottom, right, confidence = faces[i]
             # Draw bounding box
@@ -132,7 +132,7 @@ def extract_faces(image_path: Path, output_dir: Path, min_size=None):
     faces, landmarks, sizes = sort_faces(faces, landmarks, min_size)
     for i in range(len(faces)):
         lmk = landmarks[i].astype(np.int)
-        chip = norm_crop(img, lmk, 112,)
+        chip = norm_crop(img, lmk, 224,)
         width, height = sizes[i]
         top, left, bottom, right, confidence = faces[i]
         image_basename = f'{image_path.stem}_face{i}.jpg'
