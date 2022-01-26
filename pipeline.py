@@ -15,6 +15,8 @@ parser = argparse.ArgumentParser(description='Analyze video files')
 parser.add_argument('--frames', type=int, help='output every nth annotated frame to show extraction')
 parser.add_argument('--input', type=str, default='input', help='Input directory with video files')
 parser.add_argument('--output', type=str, default='output', help='Output directory for faces and data')
+parser.add_argument('--agegender', action='store_true', help='Enable age-gender classifier')
+parser.add_argument('--fair', action='store_true', help='Enable fairface classifier')
 args = parser.parse_args()
 
 SOURCE_DIR = Path(args.input)
@@ -114,5 +116,9 @@ if __name__ == '__main__':
             extract_faces_video(video, OUTPUT_DIR, output_frames=args.frames)
 
     for tarfile in Path(OUTPUT_DIR).glob("**/*.tar"):
-        print(f'>>- Analyzing faces from {tarfile}')
-        analyze_tar_fair(tarfile, OUTPUT_DIR)
+        if args.fair:
+            print(f'>>- Performing fairface classification on {tarfile}')
+            analyze_tar_fair(tarfile, OUTPUT_DIR)
+        if args.agegender:
+            print(f'>>- Performing age-gender classification on {tarfile}')
+            analyze_tar_age_gender(tarfile, OUTPUT_DIR)
