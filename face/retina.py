@@ -86,8 +86,10 @@ def extract_faces_video(video_path: Path, output_dir: Path, min_size=None, skip=
 
     seq = range(first_frame, last_frame, fps * skip)
     # Memory hungry since it reads all frames into one tensor
-    frames = vr.get_batch(seq).asnumpy()
-    for idx, img in zip(seq, frames):
+    # frames = vr.get_batch(seq).asnumpy()    
+    # for idx, img in zip(seq, frames):
+    for idx in seq:
+        img = vr[idx].asnumpy()
         img_height, img_width, _ = img.shape
         # Rescale
         scales = image_scale(img)
