@@ -19,10 +19,13 @@ parser.add_argument('--input', type=str, default='input',
 parser.add_argument('--output', type=str, default='output',
                     help='Output directory for faces and data')
 parser.add_argument('--agegender', action='store_true',
+                    default=False,
                     help='Enable age-gender classifier')
 parser.add_argument('--fair', action='store_true',
+                    default=False,
                     help='Enable fairface classifier')
 parser.add_argument('--embeddings', action='store_true',
+                    default=False,
                     help='Enable embedding extraction')
 args = parser.parse_args()
 
