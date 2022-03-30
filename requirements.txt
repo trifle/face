@@ -21,7 +21,7 @@ grpcio==1.40.0
 h5py==3.1.0
 idna==2.8
 imageio==2.9.0
-insightface==0.4.2
+insightface
 joblib==1.0.1
 keras==2.6.0
 Keras-Preprocessing==1.1.2
@@ -33,6 +33,7 @@ networkx==2.6.3
 #numpy==1.21.2
 oauthlib==3.1.1
 onnx==1.10.1
+onnxruntime-gpu==1.7.0
 opencv-python-headless==4.5.3.56
 opt-einsum==3.3.0
 Pillow>=9.0.0
