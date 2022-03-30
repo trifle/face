@@ -8,7 +8,7 @@ from utils import log_complete
 GPU_ID = 0
 FACE_DETECTION_THRESHOLD = 0.8
 
-arc_model = insightface.model_zoo.get_model('arcface_r100_v1')
+arc_model = insightface.model_zoo.get_model('buffalo_l')
 arc_model.prepare(ctx_id=GPU_ID)
 
 
@@ -31,7 +31,7 @@ def single_embedding(image):
     """
     embeddings = arc_model.get_embedding(image).flatten()
     embedding_string = "\t".join((str(e) for e in embeddings))
-    yield('ARC', embedding_string)
+    return ('ARC', embedding_string)
 
 
 def embedding_iterator(image_batch):
