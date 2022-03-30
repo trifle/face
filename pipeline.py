@@ -12,11 +12,16 @@ Master pipeline for face analysist
 """
 
 parser = argparse.ArgumentParser(description='Analyze video files')
-parser.add_argument('--frames', type=int, help='output every nth annotated frame to show extraction')
-parser.add_argument('--input', type=str, default='input', help='Input directory with video files')
-parser.add_argument('--output', type=str, default='output', help='Output directory for faces and data')
-parser.add_argument('--agegender', action='store_true', help='Enable age-gender classifier')
-parser.add_argument('--fair', action='store_true', help='Enable fairface classifier')
+parser.add_argument('--frames', type=int,
+                    help='output every nth annotated frame to show extraction')
+parser.add_argument('--input', type=str, default='input',
+                    help='Input directory with video files')
+parser.add_argument('--output', type=str, default='output',
+                    help='Output directory for faces and data')
+parser.add_argument('--agegender', action='store_true',
+                    help='Enable age-gender classifier')
+parser.add_argument('--fair', action='store_true',
+                    help='Enable fairface classifier')
 args = parser.parse_args()
 
 SOURCE_DIR = Path(args.input)
@@ -24,7 +29,7 @@ OUTPUT_DIR = Path(args.output)
 
 
 @log_complete
-def analyze_tar_age_gender(tarpath, output_dir):
+def analyze_tar_age_gender(tarpath: Path, output_dir: Path):
     """
     Analyze faces stored in a tar file
     """
@@ -64,7 +69,7 @@ def analyze_tar_age_gender(tarpath, output_dir):
 
 
 @log_complete
-def analyze_tar_fair(tarpath, output_dir):
+def analyze_tar_fair(tarpath: Path, output_dir: Path):
     """
     Analyze faces stored in a tar file
     """
@@ -99,6 +104,25 @@ def analyze_tar_fair(tarpath, output_dir):
     flush(chunk, names, outfile)
 
 
+@log_complete
+def analyze_tar_embeddings(tarpath: Path, output_dir: Path):
+    """
+    Analyze faces stored in a tar file to extract
+    embeddings with ARC face
+    """
+    from face.arc import single_embedding
+    outfile = output_dir / f'{tarpath.stem}_embeddings.tsv'
+    # Write header on news files
+    if not outfile.exists():
+        with open(outfile, 'w') as of:
+            of.write(f'filename\tclassifier\tembeddings\n')
+
+    with open(outfile, 'a') as of:
+        for img, name in iter_tar(tarpath):
+            classifier, embeddings = single_embedding(img)
+            of.write(f'{name}\t{classifier}\t{embeddings}\n')
+
+
 if __name__ == '__main__':
     """
     Main function
@@ -122,3 +146,6 @@ if __name__ == '__main__':
         if args.agegender:
             print(f'>>- Performing age-gender classification on {tarfile}')
             analyze_tar_age_gender(tarfile, OUTPUT_DIR)
+        if args.embeddings:
+            print(f'>>- Extracting embeddings from {tarfile}')
+            analyze_tar_embeddings(tarfile, OUTPUT_DIR)
