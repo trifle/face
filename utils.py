@@ -202,10 +202,13 @@ def iter_tar(input_file: Path):
     """
     Yield images from a tar file
     """
-    with tarfile.open(str(input_file), 'r') as tf:
-        for member in tqdm.tqdm(tf, desc=f">-> {input_file.name}", total=len(tf.getnames())):
-            img = load_image_from_tar(tf.extractfile(member))
-            yield (img, member.name)
+    try:
+        with tarfile.open(str(input_file), 'r') as tf:
+            for member in tqdm.tqdm(tf, desc=f">-> {input_file.name}", total=len(tf.getnames())):
+                img = load_image_from_tar(tf.extractfile(member))
+                yield (img, member.name)
+    except tarfile.ReadError as exc:
+        print(f'Error reading tarfile: {input_file}\n{exc}')
 
 
 def iter_projects(SOURCE_DIR, OUTPUT_DIR):

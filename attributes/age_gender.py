@@ -32,6 +32,8 @@ def age_gender_iterator(image_batch, classifier):
     for image in image_batch:
         img = cv2.resize(image, (64, 64))
         imgs.append(img)
+    if not imgs:
+        return
     imgs = np.stack(imgs)
     if classifier == 'imdb':
         results = imdb_model.predict(imgs)
@@ -53,6 +55,8 @@ def age_gender_batch(image_paths: list, output_file: Path, classifier):
         img = cv2.imread(str(image_path))
         img = cv2.resize(img, (64, 64))
         imgs.append(img)
+    if not imgs:
+        return
     imgs = np.stack(imgs)
     if classifier == 'imdb':
         results = imdb_model.predict(imgs)

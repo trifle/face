@@ -9,6 +9,7 @@ import cv2
 import numpy as np
 from .retinaface import RetinaFace
 from .retinaface_align import norm_crop
+import decord
 from decord import VideoReader, cpu, gpu
 
 
@@ -73,7 +74,12 @@ def extract_faces_video(video_path: Path, output_dir: Path, min_size=None, skip=
     except tarfile.ReadError:
         chip_tar_archive = tarfile.open(chip_tar_name, "w")
 
-    vr = VideoReader(str(video_path), ctx=cpu())
+    try:
+        vr = VideoReader(str(video_path), ctx=cpu())
+    except (decord._ffi.base.DECORDError, RuntimeError):
+        print(f'Not processing broken {video_path}')
+        return
+
     video_basename = video_path.stem
     fps = int(vr.get_avg_fps())
 
@@ -89,7 +95,12 @@ def extract_faces_video(video_path: Path, output_dir: Path, min_size=None, skip=
     # frames = vr.get_batch(seq).asnumpy()    
     # for idx, img in zip(seq, frames):
     for idx in seq:
-        img = vr[idx].asnumpy()
+
+        try:
+            img = vr[idx].asnumpy()
+        except (decord._ffi.base.DECORDError, RuntimeError):
+            print(f'Faulty frame {idx} in {video_path}')
+            return
         img_height, img_width, _ = img.shape
         # Rescale
         scales = image_scale(img)
