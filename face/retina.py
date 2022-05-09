@@ -16,7 +16,7 @@ from decord import VideoReader, cpu, gpu
 from utils import log_complete, write_tar_image, image_scale
 
 GPU_ID = 0
-FACE_DETECTION_THRESHOLD = 0.8
+FACE_DETECTION_THRESHOLD = 0.9
 
 face_detector = RetinaFace('./models/R50', 0, GPU_ID, 'net3')
 
@@ -133,7 +133,7 @@ def extract_faces_video(video_path: Path, output_dir: Path, min_size=None, skip=
 
 
 @log_complete
-def extract_faces(image_path: Path, output_dir: Path, min_size=None):
+def extract_faces(image_path: Path, output_dir: Path, min_size=64, min_confidence=0.95):
     """
     Extract and align faces from a single image using RetinaFace
     """
@@ -148,9 +148,9 @@ def extract_faces(image_path: Path, output_dir: Path, min_size=None):
     img_height, img_width, _ = img.shape
     scales = image_scale(img)
     faces, landmarks = face_detector.detect(
-        img, FACE_DETECTION_THRESHOLD, scales=scales)
+        img, min_confidence, scales=scales)
     faces, landmarks, sizes = sort_faces(faces, landmarks, min_size)
-    for i in range(len(faces)):
+    for i in range(len(faces)): 
         lmk = landmarks[i].astype(np.int)
         chip = norm_crop(img, lmk, 224,)
         width, height = sizes[i]

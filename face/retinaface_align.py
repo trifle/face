@@ -51,7 +51,7 @@ src_map = {112: src, 224: src * 2}
 
 
 def get_var_src(img_size):
-    ratio = img_size / 224
+    ratio = img_size / 112
     return src * ratio
 
 
